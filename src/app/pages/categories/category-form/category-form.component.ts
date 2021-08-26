@@ -93,8 +93,6 @@ export class CategoryFormComponent implements OnInit, AfterContentChecked{
       category=>this.sucess(category),
       error=>this.error(error)
     );
-    
-  
   }
 
   updateCategory(){    
