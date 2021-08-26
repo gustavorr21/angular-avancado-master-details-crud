@@ -18,7 +18,7 @@
     </div>
 
     <div class="col-md">
-        <a routerLink="/categories" class="btn btn-light float-right">
+        <a routerLink="/entries" class="btn btn-light float-right">
             Voltar
         </a>
     </div>
@@ -31,14 +31,63 @@
         </div>
 
         <div class="card-body">
+
             <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="name">Nome</label>
+                <div class="form-group col-md-2">
+                    <label for="type">Tipo</label>
+                    <select name="type" id="type" formControlName="type" class="form-control" required>
+                        <option *ngFor="let option of typeOptions"  [value]="option.value">{{option.text}}</option>
+                        
+                    </select>                    
+                </div> 
+                
+                <div class="form-group col-md-5">
+                    <label for="name">Lançamento</label>
                     <input type="text" formControlName="name" class="form-control" id="name">
                 </div>
             
+                
+                <div class="form-group col-md-3">
+                    <label for="amount" required>Valor</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">R$</div>
+                        </div>
+                        <input [imask]="imaskConfig" type="text" formControlName="amount" class="form-control text-right" id="amount">
+                    </div>                    
+                </div>
 
-                <div class="form-group col-md-8">
+                
+                <div class="form-group col-md-2">
+                    <label for="date">Data</label>
+                    <p-calendar id='date' 
+                    formControlName='date' 
+                    inputStyleClass='form-control' 
+                    dataType='string'
+                    dateFormat='dd/mm/yy'>
+                    </p-calendar>
+                </div>
+            </div>
+                                    
+            <div class="form-row">
+              
+                <div class="form-group col-md-2">
+                    <label for="paid">Status pagamento</label>
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <label (click)="entryForm.get('paid').setValue(true)" [class.active]="entryForm.get('paid').value == true" class="btn btn-outline-success">Pago</label>
+                        <label (click)="entryForm.get('paid').setValue(false)" [class.active]="entryForm.get('paid').value == false" class="btn btn-outline-danger">Pendente</label>
+                    </div>                    
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label for="categoryId">Categoria</label>
+                    <select name="categoryId" id="categoryId" formControlName="categoryId" class="form-control" required>
+                        <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+                    </select>
+                    
+                </div>
+
+                <div class="form-group col-md-7">
                     <label for="description">Descrição</label>
                     <input type="text" class="form-control" formControlName="description" id="description">
                 </div>

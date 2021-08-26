@@ -4,8 +4,10 @@ import { FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {switchMap} from 'rxjs/operators'; 
 import Swal from 'sweetalert2';
+import { Category } from '../../categories/shared/category.model';
 import { Entry } from '../shared/entry.model';
 import { EntryService } from '../shared/entry.service';
+import { CategoryService } from '../../categories/shared/category.service'; 
 @Component({
   selector: 'app-entry-form',
   templateUrl: './entry-form.component.html',
@@ -19,23 +21,41 @@ export class EntryFormComponent implements OnInit, AfterContentChecked{
   serverErrorMessage: string[] = [];
   submittingForm: boolean = false;
   entry: Entry = new Entry();
+  categories: Category[] = []
 
+  imaskConfig={
+    mask: Number,
+    scale: 2,
+    thousandsSeparator: '',
+    padFractionalZeros: true,
+    normalizeZeros: true,
+    radix:',',
+  };
 
   constructor(
     private entryService: EntryService,
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    
+    private categoryService: CategoryService,
   ) {}
 
   ngOnInit(): void {
-    debugger;
     this.setCurrentAction();
     this.buildEntryForm();
     this.loadEntry();
+    this.loadCategories();
   }
 
+  get typeOptions(): Array<any> {
+   return Object.entries(Entry.types).map(
+     ([value, text]) =>{
+      return {
+        text:text,
+        value:value,
+      }
+   });
+  }
   submitForm(){
     this.submittingForm = true;
     if(this.currentAction === 'new'){
@@ -62,16 +82,15 @@ export class EntryFormComponent implements OnInit, AfterContentChecked{
       id: null,
       name:[null, [Validators.required]],
       description:[null],
-      type:[null, [Validators.required]],
+      type:['expense', [Validators.required]],
       amount:[null, [Validators.required]],
       date:[null, [Validators.required]],
-      paid:[null, [Validators.required]],
+      paid:[true, [Validators.required]],
       categoryId:[null, [Validators.required]],
     });
   }
 
   private loadEntry(){
-    debugger;
     if(this.currentAction === 'edit'){
       this.route.paramMap.pipe(
         switchMap(params => this.entryService.getById(Number(params.get("id"))))
@@ -82,6 +101,10 @@ export class EntryFormComponent implements OnInit, AfterContentChecked{
         }
       )
     }
+  }
+
+  private loadCategories(){
+    this.categoryService.getAll().subscribe(categories=> this.categories = categories);
   }
 
   setPageTitle(){
